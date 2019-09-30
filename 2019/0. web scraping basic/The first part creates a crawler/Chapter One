@@ -1,1 +1,56 @@
+"""
+第一部分重点介绍网络数据采集的基本原理，如何利用python从网络服务器请求信息，如何对服务器的响应进行基本处理。如何以自动化手段与网站进行交互。
+思考网络爬虫通常的想法：
+   通过网站域名获取HTML数据
+   根据目标信息解析数据
+   存储目标信息
+   如果有必要，移动到另一个网页重复这个过程
+
+HTML 文本格式层、CSS样式层、JavaScript执行层和图像渲染层
+"""
+
+from urllib.request import urlopen
+html = urlopen("http://pythonscraping.com/pages/page1.html")
+print(html.read())
+"""
+urlopen 用来打开并读取一个从网络获取的远程对象。因为它是一个非常通用的库（它可
+以轻松读取 HTML 文件、 图像文件，或其他任何文件流）
+"""
+# BeautifulSoup通过定位 HTML 标签来格式化和组织复杂的网络信息，用简单易用的 Python 对象为我们展现 XML 结构信息
+# 安装Beautifulsoup4
+# 调用 html.read() 获取网页的 HTML 内容
+# HTML 内容传到 BeautifulSoup 对象，转换成下面的结构：
+"""
+html → <html><head>...</head><body>...</body></html>
+ — head → <head><title>A Useful Page<title></head>
+   — title → <title>A Useful Page</title>
+ — body → <body><h1>An Int...</h1><div>Lorem ip...</div></body>
+   — h1 → <h1>An Interesting Title</h1>
+   — div → <div>Lorem Ipsum dolor...</div>
+"""
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+html = urlopen("http://www.pythonscraping.com/pages/page1.html")
+bsObj = BeautifulSoup(html.read())
+print(bsObj.h1)
+# 输出结果是：
+# <h1>An Interesting Title</h1>
+"""
+让我们看看爬虫 import 语句后面的第一行代码，如何处理那里可能出现的异常：
+html = urlopen("http://www.pythonscraping.com/pages/page1.html")
+这行代码主要可能会发生两种异常：
+• 网页在服务器上不存在（或者获取页面的时候出现错误）
+• 服务器不存在
+第一种异常发生时，程序会返回 HTTP 错误。 HTTP 错误可能是“ 404 Page Not Found”“ 500
+Internal Server Error”等。所有类似情形， urlopen 函数都会抛出“ HTTPError”异常。我们
+可以用下面的方式处理这种异常：
+"""
+try:
+    html = urlopen("http://www.pythonscraping.com/pages/page1.html")
+except HTTPError as e:
+    print(e)
+    # 返回空值，中断程序，或者执行另一个方案
+else:
+    # 程序继续。注意：如果你已经在上面异常捕捉那一段代码里返回或中断 （ break），
+    # 那么就不需要使用else语句了，这段代码也不会执行
 
